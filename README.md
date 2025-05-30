@@ -212,20 +212,30 @@ The chatbot system is implemented using:
 
 ### Key Components
 
-1. **Chat Controller** (`app/Http/Controllers/ChatController.php`)
-   - Handles chat requests and responses
-   - Integrates with AI services
-   - Manages conversation history
+1. **AI Chat Controller** (`app/Http/Controllers/ChatController.php`)
+   - Handles multiple AI service requests
+   - Routes queries to appropriate AI provider (OpenAI, DeepSeek, Hugging Face)
+   - Manages conversation history and context
 
 2. **Health Knowledge Service** (`app/Services/HealthKnowledgeService.php`)
-   - Processes health-related queries
-   - Retrieves relevant information from database
-   - Formats responses for chatbot
+   - Processes health-related queries from diseases database
+   - Retrieves relevant information from topics and categories
+   - Formats responses for different AI models
 
-3. **Frontend Chat Interface** (`resources/js/chat.js`)
-   - Real-time chat UI
-   - Message handling and display
-   - User interaction management
+3. **VR Content Service** (`app/Services/VRContentService.php`)
+   - Manages Sketchfab integration for 3D medical content
+   - Handles VR content suggestions and approvals
+   - Provides VR-ready health visualizations
+
+4. **Device Integration Service** (`app/Services/DeviceIntegrationService.php`)
+   - Connects with fitness and health tracking devices
+   - Processes health data from connected devices
+   - Generates AI recommendations based on device data
+
+5. **Frontend Chat Interface** (`resources/js/chat.js`)
+   - Multi-AI provider chat UI
+   - Real-time message handling and display
+   - VR content integration in chat responses
 
 ### Configuration
 
@@ -273,13 +283,53 @@ QUEUE_CONNECTION=database
 
 ## 🗄️ Database Schema
 
-### Key Tables
+### Core Tables
 
-- `users` - User authentication and profiles
-- `health_articles` - Health information content
-- `categories` - Content categorization
-- `chat_conversations` - Chat history
-- `chat_messages` - Individual chat messages
+#### User Management
+- **`users`** - User authentication and basic information
+- **`user_profiles`** - Extended user profiles with health data (birth_date, gender, height, weight, medical_history, etc.)
+- **`connected_devices`** - Integration with health devices (Fitbit, Apple Health, Google Fit)
+
+#### Health & Medical Content
+- **`diseases`** - Disease information database with symptoms and treatments
+- **`categories`** - Content categorization system with icons
+- **`topics`** - Health discussion topics and articles
+- **`replies`** - Comments and responses to topics
+- **`tags`** - Content tagging system
+- **`tag_topic`** - Many-to-many relationship between tags and topics
+
+#### VR & Interactive Content
+- **`vr_contents`** - VR content with Sketchfab integration
+- **`vr_content_suggestions`** - User-submitted VR content suggestions
+
+#### Professional Network
+- **`professionals`** - Healthcare professional profiles
+- **`doctor_infos`** - Detailed doctor information and credentials
+
+#### Events & Community
+- **`events`** - Health events and activities with location, registration, and categorization
+- **`likes`** - User engagement tracking (polymorphic relations)
+
+#### AI & Recommendations
+- **`ai_recommendations`** - AI-generated health insights and recommendations
+
+### Key Relationships
+
+1. **User → User Profile**: One-to-one relationship for extended user data
+2. **User → Connected Devices**: One-to-many for health device integrations  
+3. **User → Professional**: Healthcare professionals linked to user accounts
+4. **Professional → Doctor Info**: Detailed professional information
+5. **Topics → Replies**: Forum-style discussion system
+6. **Events → Categories**: Categorized health events
+7. **VR Content → Categories**: Organized VR health content
+
+### Special Features
+
+- **Multilingual Support**: UTF8MB4 collation for international content
+- **Soft Deletes**: Safe deletion of events and content
+- **Polymorphic Relations**: Flexible like system for topics and replies
+- **Health Device Integration**: Support for multiple fitness/health APIs
+- **VR Integration**: Sketchfab UID storage for 3D medical content
 
 ## 🧪 Testing
 
